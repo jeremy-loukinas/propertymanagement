@@ -10,7 +10,7 @@ services:
     volumes:
       - dbdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL","pg_isready -U $$POSTGRES_USER"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 5s
       timeout: 3s
       retries: 40
@@ -38,7 +38,7 @@ services:
   backend:
     build: ./backend
     environment:
-      DATABASE_URL: postgresql+psycopg://$POSTGRES_USER:$POSTGRES_PASSWORD@db:5432/$POSTGRES_DB
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       REDIS_URL: redis://redis:6379/0
       MINIO_ENDPOINT: http://minio:9000
       MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
@@ -58,7 +58,8 @@ services:
       - "8080:8080"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL","python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8080/health').status==200 else 1)""]
+      # simple healthcheck to avoid YAML quoting traps
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 12
@@ -67,7 +68,7 @@ services:
     build: ./backend
     command: python -m app.workers.worker
     environment:
-      DATABASE_URL: postgresql+psycopg://$POSTGRES_USER:$POSTGRES_PASSWORD@db:5432/$POSTGRES_DB
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       REDIS_URL: redis://redis:6379/0
       JWT_SECRET: ${JWT_SECRET}
       TZ: ${TZ}
@@ -80,7 +81,7 @@ services:
     build: ./backend
     command: python -m app.workers.tasks
     environment:
-      DATABASE_URL: postgresql+psycopg://$POSTGRES_USER:$POSTGRES_PASSWORD@db:5432/$POSTGRES_DB
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       REDIS_URL: redis://redis:6379/0
       TZ: ${TZ}
     depends_on:
@@ -90,7 +91,6 @@ services:
 
   frontend:
     build: ./frontend
-    # Frontend auto-detects API at runtime; override with NEXT_PUBLIC_API_BASE if needed.
     ports:
       - "3030:3030"
     depends_on:
@@ -101,3 +101,4 @@ services:
 volumes:
   dbdata:
   minio:
+YML
