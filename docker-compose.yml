@@ -101,4 +101,3 @@ services:
 volumes:
   dbdata:
   minio:
-YML
