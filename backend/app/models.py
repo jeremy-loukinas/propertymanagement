@@ -2,7 +2,6 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import String, Boolean, ForeignKey, Integer, Float, Text, Date, DateTime
 from datetime import datetime, date
 from app.db import Base
-
 class User(Base):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -11,7 +10,6 @@ class User(Base):
     phone: Mapped[str | None] = mapped_column(String(32))
     role: Mapped[str] = mapped_column(String(32), default="Manager")
     password_hash: Mapped[str] = mapped_column(String(255))
-
 class Property(Base):
     __tablename__ = "properties"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -22,7 +20,6 @@ class Property(Base):
     zip: Mapped[str] = mapped_column(String(32))
     timezone: Mapped[str] = mapped_column(String(64), default="America/New_York")
     active: Mapped[bool] = mapped_column(Boolean, default=True)
-
 class Unit(Base):
     __tablename__ = "units"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -31,7 +28,6 @@ class Unit(Base):
     beds: Mapped[int] = mapped_column(Integer, default=1)
     baths: Mapped[float] = mapped_column(Float, default=1.0)
     notes: Mapped[str | None] = mapped_column(Text)
-
 class Guest(Base):
     __tablename__ = "guests"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -39,7 +35,7 @@ class Guest(Base):
     last_name: Mapped[str] = mapped_column(String(80))
     phone: Mapped[str | None] = mapped_column(String(32))
     email: Mapped[str | None] = mapped_column(String(120))
-
+    photo_url: Mapped[str | None] = mapped_column(String(512))
 class Booking(Base):
     __tablename__ = "bookings"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -51,7 +47,6 @@ class Booking(Base):
     start_date: Mapped[date] = mapped_column(Date)
     end_date: Mapped[date] = mapped_column(Date)
     party_size: Mapped[int | None] = mapped_column(Integer)
-
 class Ticket(Base):
     __tablename__ = "tickets"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -67,7 +62,6 @@ class Ticket(Base):
     sla_due_at: Mapped[datetime | None] = mapped_column(DateTime)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
 class Vendor(Base):
     __tablename__ = "vendors"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -76,7 +70,6 @@ class Vendor(Base):
     email: Mapped[str | None] = mapped_column(String(120))
     insurance_expires_on: Mapped[date | None] = mapped_column(Date)
     notes: Mapped[str | None] = mapped_column(Text)
-
 class Integration(Base):
     __tablename__ = "integrations"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -85,7 +78,6 @@ class Integration(Base):
     config_json: Mapped[str] = mapped_column(Text)
     status: Mapped[str] = mapped_column(String(32), default="active")
     last_sync_at: Mapped[datetime | None] = mapped_column(DateTime)
-
 class ServiceCall(Base):
     __tablename__ = "service_calls"
     id: Mapped[int] = mapped_column(primary_key=True)

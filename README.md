@@ -1,25 +1,28 @@
-# PropertyOps — Full Bundle (v0.5)
+# PropertyOps — Full Bundle (v0.8.0)
 
-Same as v0.4 plus small usability tweaks (version bump, docs).
+**What's new in v0.8.0**
+- ✅ **No demo data by default** — setup script no longer runs the seeder.
+- 🗑️ **Delete from UI** — delete buttons for Properties, Units, Bookings, Vendors, Tickets.
+- 🧭 **Clear labels/help** — all forms now have field labels & hints.
+- 🔗 **Airbnb iCal Admin** — labeled stats, list of saved iCal links with delete, and "Sync now" feedback.
+- 🧹 `nuke_demo_data.sh` — optional one-shot script to clear any leftover sample rows.
+- 🐍 Backend: DELETE endpoints added (`/api/assets/...`, `/api/bookings/...`, `/api/guests/...`, `/api/tickets/...`), iCal sync stamps `last_sync_at`.
 
-## Fresh install (Ubuntu 24.04)
+## Install / Upgrade
 ```bash
-unzip propertyops_full_0.5.zip -d ~/propertyops
-cd ~/propertyops/propertyops_full_0_5
+unzip propertyops_full_0.8.0.zip -d ~/propertyops
+cd ~/propertyops/propertyops_full_0_8_0
 bash setup_ubuntu24.sh
+bash set_api_to_server_ip.sh 192.168.1.192   # or your hostname/IP
+bash validate_compose.sh
+docker compose up -d --build
+# (Seeder is DISABLED by default)
 ```
 
-When done:
-- UI:  http://<server-ip>:3030
-- API: http://<server-ip>:8080/health
-
-Default admin (change in `.env`): `admin@example.com` / `ChangeMe123!`
-
-## Common commands
+## Optional: Clear any old demo data
 ```bash
-cd ~/propertyops/propertyops_full_0_5
-sudo docker compose up -d     # start or restart
-bash status.sh                # status + logs
-bash open_ports.sh            # open 3030/8080 in UFW
-bash reset_stack.sh           # ⚠ wipes DB & MinIO
+bash nuke_demo_data.sh
 ```
+
+## Notes
+- Compose is YAML-safe (no inline lists). `bcrypt` is pinned to avoid passlib issues.

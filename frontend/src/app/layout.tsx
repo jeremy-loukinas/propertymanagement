@@ -1,5 +1,5 @@
 import './globals.css'
-
+const version = process.env.NEXT_PUBLIC_APP_VERSION || 'dev'
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <a href="/assets">Properties & Units</a>
               <a href="/admin">Admin</a>
             </nav>
-            <footer>v0.5</footer>
+            <footer>v{version}</footer>
           </aside>
           <main className="main">{children}</main>
         </div>

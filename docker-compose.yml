@@ -6,21 +6,19 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5532:5532"
+      - "5432:5432"
     volumes:
       - dbdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: pg_isready -U ${POSTGRES_USER}
       interval: 5s
       timeout: 3s
       retries: 40
-    restart: unless-stopped
 
   redis:
     image: redis:7
     ports:
       - "6379:6379"
-    restart: unless-stopped
 
   minio:
     image: minio/minio:latest
@@ -33,11 +31,11 @@ services:
       - "9001:9001"
     volumes:
       - minio:/data
-    restart: unless-stopped
 
   backend:
     build: ./backend
     environment:
+      APP_VERSION: ${APP_VERSION}
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       REDIS_URL: redis://redis:6379/0
       MINIO_ENDPOINT: http://minio:9000
@@ -56,10 +54,9 @@ services:
         condition: service_started
     ports:
       - "8080:8080"
-    restart: unless-stopped
     healthcheck:
-      # simple healthcheck to avoid YAML quoting traps
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/health || exit 1"]
+      test: >
+        python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8080/health').status==200 else 1)"
       interval: 10s
       timeout: 5s
       retries: 12
@@ -75,7 +72,6 @@ services:
     depends_on:
       redis:
         condition: service_started
-    restart: unless-stopped
 
   scheduler:
     build: ./backend
@@ -87,16 +83,17 @@ services:
     depends_on:
       backend:
         condition: service_started
-    restart: unless-stopped
 
   frontend:
     build: ./frontend
+    environment:
+      NEXT_PUBLIC_API_BASE: ${NEXT_PUBLIC_API_BASE:-}
+      NEXT_PUBLIC_APP_VERSION: ${APP_VERSION}
     ports:
       - "3030:3030"
     depends_on:
       backend:
         condition: service_started
-    restart: unless-stopped
 
 volumes:
   dbdata:
